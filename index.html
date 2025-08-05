@@ -114,6 +114,7 @@
         <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;">
         <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
       </div>
+      <canvas id="levelMeter" width="220" height="16" style="margin-top:0.7em;display:block;margin-left:auto;margin-right:auto;background:#222;border-radius:4px;"></canvas>
     </div>
     <div class="status" id="songinfo">No stream loaded.</div>
     <div class="processing" id="processingStatus">
@@ -126,7 +127,7 @@
       <ul>
         <li>Works best with streams that support CORS and standard codecs (MP3/AAC).</li>
         <li>If song info isn’t shown, the stream may not send track metadata or allow access from browsers.</li>
-        <li>All audio is enhanced in real time with FX: Expander, Exciter, and Auto Gain.</li>
+        <li>All audio is enhanced in real time with FX: Expander, Exciter</li>
         <li>Switch between <b>Natural</b> and <b>Creative</b> presets for different sound characters.</li>
         <li>Change the FX order for alternate sound textures.</li>
       </ul>
@@ -149,8 +150,59 @@ const volumeSlider = document.getElementById('volumeSlider');
 const progressBar = document.getElementById('progressBar');
 const currentTimeLabel = document.getElementById('currentTime');
 const durationLabel = document.getElementById('duration');
+const levelMeter = document.getElementById('levelMeter');
 
-let ctx, src, expander, exciter, gainNode, analyser, autoGainId;
+let ctx, src, expander, exciter, gainNode, analyser;
+
+let meterAnimId = null;
+
+// Draw level meter (simple peak)
+function drawLevelMeter(level) {
+  const ctx2d = levelMeter.getContext('2d');
+  ctx2d.clearRect(0, 0, levelMeter.width, levelMeter.height);
+  // Background bar
+  ctx2d.fillStyle = '#333';
+  ctx2d.fillRect(0, 0, levelMeter.width, levelMeter.height);
+  // Level bar
+  const w = Math.max(2, level * levelMeter.width);
+  ctx2d.fillStyle = level > 0.85 ? '#f55' : (level > 0.6 ? '#fc0' : '#3fa');
+  ctx2d.fillRect(0, 0, w, levelMeter.height);
+}
+
+// Start meter animation
+function startLevelMeter() {
+  if (!analyser) {
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+  }
+  // Connect analyser after FX chain
+  if (orderSelect.value === 'expander-exciter') {
+    exciter.connect(analyser);
+  } else {
+    expander.connect(analyser);
+  }
+  analyser.connect(ctx.destination);
+
+  function animate() {
+    const data = new Uint8Array(analyser.fftSize);
+    analyser.getByteTimeDomainData(data);
+    // Calculate peak level (normalized 0..1)
+    let peak = 0;
+    for (let i = 0; i < data.length; i++) {
+      const v = (data[i] - 128) / 128;
+      peak = Math.max(peak, Math.abs(v));
+    }
+    drawLevelMeter(peak);
+    meterAnimId = requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// Stop meter animation
+function stopLevelMeter() {
+  if (meterAnimId) cancelAnimationFrame(meterAnimId);
+  drawLevelMeter(0);
+}
 
 function setTheme(mode) {
   document.body.classList.toggle('light', mode === 'light');
@@ -172,14 +224,12 @@ function getPresetParams() {
     case 'creative':
       return {
         exp: { threshold: -60, knee: 25, ratio: 1.2, attack: 0.002, release: 0.1 },
-        exc: { curve: 24 },
-        autogain: 0.19
+        exc: { curve: 24 }
       };
     default: // natural
       return {
         exp: { threshold: -45, knee: 40, ratio: 1.5, attack: 0.005, release: 0.3 },
-        exc: { curve: 10 },
-        autogain: 0.13
+        exc: { curve: 10 }
       };
   }
 }
@@ -205,6 +255,7 @@ playBtn.onclick = () => {
 
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
   if (src) src.disconnect();
+  if (analyser) analyser.disconnect();
 
   src = ctx.createMediaElementSource(audio);
   const p = getPresetParams();
@@ -231,15 +282,8 @@ playBtn.onclick = () => {
   exciter.curve = makeExciterCurve(p.exc.curve);
   exciter.oversample = '4x';
 
-  // ==== Auto Gain ====
-  gainNode = ctx.createGain();
-
-  // ==== Analyser for auto gain ====
-  analyser = ctx.createAnalyser();
-  analyser.fftSize = 2048;
-
   // ---- Chain order switch ----
-  // Order: SRC -> [A] -> [B] -> Analyser -> Gain -> Out
+  // Order: SRC -> [A] -> [B] -> Out
   // [A/B] = Expander/Exciter (orderable)
   let nodeA, nodeB;
   if (orderSelect.value === 'expander-exciter') {
@@ -251,30 +295,13 @@ playBtn.onclick = () => {
   }
   src.connect(nodeA);
   nodeA.connect(nodeB);
-  nodeB.connect(analyser);
-  analyser.connect(gainNode);
-  gainNode.connect(ctx.destination);
-
-  // ==== Auto Gain Logic ====
-  if (autoGainId) cancelAnimationFrame(autoGainId);
-  function autoGain() {
-    const buffer = new Uint8Array(analyser.fftSize);
-    analyser.getByteTimeDomainData(buffer);
-    let sum = 0;
-    for (let i = 0; i < buffer.length; i++) {
-      let v = (buffer[i] - 128) / 128;
-      sum += v * v;
-    }
-    let rms = Math.sqrt(sum / buffer.length);
-    let target = p.autogain;
-    let gain = rms > 0 ? target / rms : 1;
-    gainNode.gain.value = Math.max(0.5, Math.min(gain, 6));
-    autoGainId = requestAnimationFrame(autoGain);
-  }
-  autoGain();
+  // analyser will be connected in startLevelMeter
+  // nodeB.connect(ctx.destination);
 
   // ==== Song Info (best effort) ====
   fetchSongInfo(url);
+
+  startLevelMeter();
 };
 
 stopBtn.onclick = () => {
@@ -282,7 +309,8 @@ stopBtn.onclick = () => {
   audio.src = '';
   songinfo.textContent = 'No stream loaded.';
   if (src) src.disconnect();
-  if (autoGainId) cancelAnimationFrame(autoGainId);
+  if (analyser) analyser.disconnect();
+  stopLevelMeter();
 };
 
 // Pause functionality
@@ -335,7 +363,6 @@ stopBtn.onclick = () => {
   audio.src = '';
   songinfo.textContent = 'No stream loaded.';
   if (src) src.disconnect();
-  if (autoGainId) cancelAnimationFrame(autoGainId);
 };
 
 // ---- Song Info Fetching ----
