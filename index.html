@@ -109,7 +109,6 @@
       <button id="pauseBtn">Pause</button>
       <button id="stopBtn">Stop</button>
       <button id="muteBtn">Mute</button>
-      <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="1" style="width:90px;vertical-align:middle;">
       <div style="margin-top:0.5em;">
         <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;">
         <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
@@ -146,7 +145,6 @@ const themeToggle = document.getElementById('theme-toggle');
 const presetSelect = document.getElementById('presetSelect');
 const orderSelect = document.getElementById('orderSelect');
 const fxChainLabel = document.getElementById('fxChainLabel');
-const volumeSlider = document.getElementById('volumeSlider');
 const progressBar = document.getElementById('progressBar');
 const currentTimeLabel = document.getElementById('currentTime');
 const durationLabel = document.getElementById('duration');
@@ -322,11 +320,6 @@ pauseBtn.onclick = () => {
 muteBtn.onclick = () => {
   audio.muted = !audio.muted;
   muteBtn.textContent = audio.muted ? "Unmute" : "Mute";
-};
-
-// Volume slider
-volumeSlider.oninput = () => {
-  audio.volume = volumeSlider.value;
 };
 
 // Progress bar update
