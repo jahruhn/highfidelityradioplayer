@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,7 +106,14 @@
     </div>
     <div id="audio-controls">
       <button id="playBtn">Play Stream</button>
+      <button id="pauseBtn">Pause</button>
       <button id="stopBtn">Stop</button>
+      <button id="muteBtn">Mute</button>
+      <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="1" style="width:90px;vertical-align:middle;">
+      <div style="margin-top:0.5em;">
+        <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;">
+        <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
+      </div>
     </div>
     <div class="status" id="songinfo">No stream loaded.</div>
     <div class="processing" id="processingStatus">
@@ -129,7 +135,9 @@
 <script>
 const audio = document.getElementById('audio');
 const playBtn = document.getElementById('playBtn');
+const pauseBtn = document.getElementById('pauseBtn');
 const stopBtn = document.getElementById('stopBtn');
+const muteBtn = document.getElementById('muteBtn');
 const urlInput = document.getElementById('streamUrl');
 const songinfo = document.getElementById('songinfo');
 const processingStatus = document.getElementById('processingStatus');
@@ -137,6 +145,10 @@ const themeToggle = document.getElementById('theme-toggle');
 const presetSelect = document.getElementById('presetSelect');
 const orderSelect = document.getElementById('orderSelect');
 const fxChainLabel = document.getElementById('fxChainLabel');
+const volumeSlider = document.getElementById('volumeSlider');
+const progressBar = document.getElementById('progressBar');
+const currentTimeLabel = document.getElementById('currentTime');
+const durationLabel = document.getElementById('duration');
 
 let ctx, src, expander, exciter, gainNode, analyser, autoGainId;
 
@@ -273,6 +285,61 @@ stopBtn.onclick = () => {
   if (autoGainId) cancelAnimationFrame(autoGainId);
 };
 
+// Pause functionality
+pauseBtn.onclick = () => {
+  audio.pause();
+};
+
+// Mute/unmute
+muteBtn.onclick = () => {
+  audio.muted = !audio.muted;
+  muteBtn.textContent = audio.muted ? "Unmute" : "Mute";
+};
+
+// Volume slider
+volumeSlider.oninput = () => {
+  audio.volume = volumeSlider.value;
+};
+
+// Progress bar update
+audio.addEventListener('timeupdate', () => {
+  if (audio.duration && isFinite(audio.duration)) {
+    progressBar.max = audio.duration;
+    progressBar.value = audio.currentTime;
+    durationLabel.textContent = formatTime(audio.duration);
+  } else {
+    progressBar.value = 0;
+    durationLabel.textContent = "--:--";
+  }
+  currentTimeLabel.textContent = formatTime(audio.currentTime);
+});
+
+// Seek (if supported)
+progressBar.oninput = () => {
+  if (audio.duration && isFinite(audio.duration)) {
+    audio.currentTime = progressBar.value;
+  }
+};
+
+// Format time helper
+function formatTime(sec) {
+  if (!isFinite(sec)) return "00:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+// Reset controls on stop
+stopBtn.onclick = () => {
+  audio.pause();
+  audio.src = '';
+  songinfo.textContent = 'No stream loaded.';
+  if (src) src.disconnect();
+  if (autoGainId) cancelAnimationFrame(autoGainId);
+};
+
+// ---- Song Info Fetching ----
+// (remains the same)
 function fetchSongInfo(url) {
   songinfo.textContent = "Connecting to: " + url;
   fetch(url, {
