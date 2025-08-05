@@ -173,13 +173,14 @@ function startLevelMeter() {
     analyser = ctx.createAnalyser();
     analyser.fftSize = 256;
   }
-  // Connect analyser after FX chain
+  // Connect analyser after FX chain and gain
   if (orderSelect.value === 'expander-exciter') {
     exciter.connect(analyser);
   } else {
     expander.connect(analyser);
   }
-  analyser.connect(ctx.destination);
+  analyser.connect(gainNode);
+  gainNode.connect(ctx.destination);
 
   function animate() {
     const data = new Uint8Array(analyser.fftSize);
@@ -280,9 +281,13 @@ playBtn.onclick = () => {
   exciter.curve = makeExciterCurve(p.exc.curve);
   exciter.oversample = '4x';
 
+  // ==== Gain node for loudness normalization ====
+  if (gainNode) gainNode.disconnect();
+  gainNode = ctx.createGain();
+  // Set gain for approx -14 dB RMS (0 dBFS = gain 1.0, -14 dB ≈ 0.2)
+  gainNode.gain.value = 0.2;
+
   // ---- Chain order switch ----
-  // Order: SRC -> [A] -> [B] -> Out
-  // [A/B] = Expander/Exciter (orderable)
   let nodeA, nodeB;
   if (orderSelect.value === 'expander-exciter') {
     nodeA = expander; nodeB = exciter;
@@ -293,8 +298,9 @@ playBtn.onclick = () => {
   }
   src.connect(nodeA);
   nodeA.connect(nodeB);
+  nodeB.connect(gainNode);
   // analyser will be connected in startLevelMeter
-  // nodeB.connect(ctx.destination);
+  // gainNode.connect(ctx.destination);
 
   // ==== Song Info (best effort) ====
   fetchSongInfo(url);
