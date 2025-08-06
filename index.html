@@ -284,8 +284,8 @@ playBtn.onclick = () => {
   // ==== Gain node for loudness normalization ====
   if (gainNode) gainNode.disconnect();
   gainNode = ctx.createGain();
-  // Set gain for approx -30 dB RMS (0 dBFS = gain 1.0, -30 dB ≈ 0.032)
-  gainNode.gain.value = 0.032;
+  // Set gain for approx -80 dB RMS (0 dBFS = gain 1.0, -80 dB ≈ 0.0001)
+  gainNode.gain.value = 0.0001;
 
   // ---- Chain order switch ----
   let nodeA, nodeB;
