@@ -95,10 +95,6 @@
     <label for="streamUrl"><b>Stream URL:</b></label>
     <input id="streamUrl" type="text" placeholder="e.g. https://radio.example.com/stream" autocomplete="off">
     <div class="switch-row">
-      <select id="presetSelect">
-        <option value="natural">🎧 Natural (default)</option>
-        <option value="creative">🎨 Creative</option>
-      </select>
       <select id="orderSelect">
         <option value="expander-exciter">Expander → Exciter</option>
         <option value="exciter-expander">Exciter → Expander</option>
@@ -142,7 +138,6 @@ const urlInput = document.getElementById('streamUrl');
 const songinfo = document.getElementById('songinfo');
 const processingStatus = document.getElementById('processingStatus');
 const themeToggle = document.getElementById('theme-toggle');
-const presetSelect = document.getElementById('presetSelect');
 const orderSelect = document.getElementById('orderSelect');
 const fxChainLabel = document.getElementById('fxChainLabel');
 const progressBar = document.getElementById('progressBar');
@@ -218,19 +213,13 @@ themeToggle.onclick = function() {
   if (saved === 'light') setTheme('light');
 })();
 
-function getPresetParams() {
-  switch (presetSelect.value) {
-    case 'creative':
-      return {
-        exp: { threshold: -45, knee: 25, ratio: 1.1, attack: 0.01, release: 0.2 }, // milder
-        exc: { curve: 6 } // less aggressive exciter
-      };
-    default: // natural
-      return {
-        exp: { threshold: -35, knee: 30, ratio: 1.2, attack: 0.02, release: 0.4 }, // milder
-        exc: { curve: 3 } // less aggressive exciter
-      };
-  }
+// Remove getPresetParams and use automatic settings for expander and exciter
+function getFxParamsAuto() {
+  // "Auto mode": Use browser defaults for expander (DynamicsCompressor) and exciter
+  return {
+    exp: {}, // Let browser use default compressor settings
+    exc: { curve: 2 } // Mild exciter curve for all streams
+  };
 }
 
 function updateFxChainLabel() {
@@ -239,7 +228,6 @@ function updateFxChainLabel() {
     : "Exciter → Expander";
 }
 orderSelect.onchange = updateFxChainLabel;
-presetSelect.onchange = updateFxChainLabel;
 
 playBtn.onclick = () => {
   const url = urlInput.value.trim();
@@ -257,19 +245,15 @@ playBtn.onclick = () => {
   if (analyser) analyser.disconnect();
 
   src = ctx.createMediaElementSource(audio);
-  const p = getPresetParams();
+  const p = getFxParamsAuto();
 
-  // ==== Expander ====
+  // ==== Expander (DynamicsCompressor in auto mode) ====
   expander = ctx.createDynamicsCompressor();
-  expander.threshold.value = p.exp.threshold;
-  expander.knee.value = p.exp.knee;
-  expander.ratio.value = p.exp.ratio;
-  expander.attack.value = p.exp.attack;
-  expander.release.value = p.exp.release;
+  // Do not set any expander parameters, use browser defaults
 
   // ==== Exciter ====
   exciter = ctx.createWaveShaper();
-  function makeExciterCurve(amount = 3) {
+  function makeExciterCurve(amount = 2) {
     const n_samples = 44100;
     const curve = new Float32Array(n_samples);
     for (let i = 0; i < n_samples; ++i) {
@@ -284,7 +268,6 @@ playBtn.onclick = () => {
   // ==== Gain node for loudness normalization ====
   if (gainNode) gainNode.disconnect();
   gainNode = ctx.createGain();
-  // Set gain for approx -14 dB RMS (0 dBFS = gain 1.0, -14 dB ≈ 0.2)
   gainNode.gain.value = 0.2;
 
   // ---- Chain order switch ----
@@ -299,11 +282,9 @@ playBtn.onclick = () => {
   src.connect(nodeA);
   nodeA.connect(nodeB);
   nodeB.connect(gainNode);
-  gainNode.connect(ctx.destination); // <-- Add this line!
+  gainNode.connect(ctx.destination);
 
-  // ==== Song Info (best effort) ====
   fetchSongInfo(url);
-
   startLevelMeter();
 };
 
