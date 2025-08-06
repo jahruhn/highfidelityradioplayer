@@ -248,7 +248,10 @@ playBtn.onclick = () => {
 
   // ==== Expander (DynamicsCompressor in auto mode) ====
   expander = ctx.createDynamicsCompressor();
-  // Do not set any expander parameters, use browser defaults
+  // Lower the output of the expander by reducing its threshold
+  expander.threshold.value = -50; // Lower threshold (default is -24), reduces output level
+  // Optionally, you can also reduce the ratio for a gentler effect:
+  expander.ratio.value = 1.5; // Gentler expansion
 
   // ==== Exciter ====
   exciter = ctx.createWaveShaper();
