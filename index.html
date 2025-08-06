@@ -299,6 +299,7 @@ playBtn.onclick = () => {
   src.connect(nodeA);
   nodeA.connect(nodeB);
   nodeB.connect(gainNode);
+  gainNode.connect(ctx.destination); // <-- Add this line!
 
   // ==== Song Info (best effort) ====
   fetchSongInfo(url);
