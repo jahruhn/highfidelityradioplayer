@@ -248,9 +248,8 @@ playBtn.onclick = () => {
 
   // ==== Expander (DynamicsCompressor in auto mode) ====
   expander = ctx.createDynamicsCompressor();
-  // Lower the output of the expander by reducing its threshold
-  expander.threshold.value = -50; // Lower threshold (default is -24), reduces output level
-  // Optionally, you can also reduce the ratio for a gentler effect:
+  // Raise the output of the expander by increasing its threshold
+  expander.threshold.value = -30; // Was -50, now -30 for higher output level
   expander.ratio.value = 1.5; // Gentler expansion
 
   // ==== Exciter ====
