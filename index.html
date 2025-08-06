@@ -222,13 +222,13 @@ function getPresetParams() {
   switch (presetSelect.value) {
     case 'creative':
       return {
-        exp: { threshold: -60, knee: 25, ratio: 1.2, attack: 0.002, release: 0.1 },
-        exc: { curve: 24 }
+        exp: { threshold: -45, knee: 25, ratio: 1.1, attack: 0.01, release: 0.2 }, // milder
+        exc: { curve: 6 } // less aggressive exciter
       };
     default: // natural
       return {
-        exp: { threshold: -45, knee: 40, ratio: 1.5, attack: 0.005, release: 0.3 },
-        exc: { curve: 10 }
+        exp: { threshold: -35, knee: 30, ratio: 1.2, attack: 0.02, release: 0.4 }, // milder
+        exc: { curve: 3 } // less aggressive exciter
       };
   }
 }
@@ -269,7 +269,7 @@ playBtn.onclick = () => {
 
   // ==== Exciter ====
   exciter = ctx.createWaveShaper();
-  function makeExciterCurve(amount = 10) {
+  function makeExciterCurve(amount = 3) {
     const n_samples = 44100;
     const curve = new Float32Array(n_samples);
     for (let i = 0; i < n_samples; ++i) {
@@ -284,8 +284,8 @@ playBtn.onclick = () => {
   // ==== Gain node for loudness normalization ====
   if (gainNode) gainNode.disconnect();
   gainNode = ctx.createGain();
-  // Set gain for approx -80 dB RMS (0 dBFS = gain 1.0, -80 dB ≈ 0.0001)
-  gainNode.gain.value = 0.0001;
+  // Set gain for approx -20 dB RMS (0 dBFS = gain 1.0, -20 dB ≈ 0.1)
+  gainNode.gain.value = 0.1;
 
   // ---- Chain order switch ----
   let nodeA, nodeB;
@@ -299,8 +299,6 @@ playBtn.onclick = () => {
   src.connect(nodeA);
   nodeA.connect(nodeB);
   nodeB.connect(gainNode);
-  // analyser will be connected in startLevelMeter
-  // gainNode.connect(ctx.destination);
 
   // ==== Song Info (best effort) ====
   fetchSongInfo(url);
