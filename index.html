@@ -413,6 +413,17 @@ updateClocks();
 
 // Initial UI state
 updateFxChainLabel();
+
+// Auto-populate stream URL from ?stream=... parameter
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const stream = params.get('stream');
+  if (stream) {
+    urlInput.value = stream;
+    // Optional: auto-play if stream param is present
+    // playBtn.click();
+  }
+})();
 </script>
 </body>
 </html>
