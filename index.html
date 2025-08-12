@@ -95,7 +95,8 @@
 <body>
   <header>
     <button id="theme-toggle" title="Toggle dark/light mode"></button>
-    <h1>High Fidelity Radio Player</h1>
+    <h1 style="display:inline-block;">High Fidelity Radio Player</h1>
+    <span id="clock" style="margin-left:1.5em;font-size:1em;vertical-align:middle;"></span>
     <div style="font-size:1.1em;color:var(--status);">Enter a compatible internet radio stream URL</div>
   </header>
   <div id="app-container">
@@ -378,6 +379,23 @@ function fetchSongInfo(url) {
     songinfo.textContent = "Playing: " + url + " (No song info available)";
   });
 }
+
+// Clock update function
+function updateClocks() {
+  // Local time
+  const now = new Date();
+  const local = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+  // Swatch Internet Time (.beats)
+  // Biel Mean Time (BMT) = UTC+1
+  const utc = now.getUTCHours() * 3600 + now.getUTCMinutes() * 60 + now.getUTCSeconds();
+  const bmtSeconds = utc + 3600; // add 1 hour in seconds
+  let beats = Math.floor((bmtSeconds / 86.4) % 1000);
+  if (beats < 0) beats += 1000;
+  document.getElementById('clock').textContent =
+    `Local: ${local} | @${beats.toString().padStart(3, '0')}`;
+}
+setInterval(updateClocks, 1000);
+updateClocks();
 
 // Initial UI state
 updateFxChainLabel();
