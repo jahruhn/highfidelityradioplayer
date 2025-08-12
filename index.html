@@ -39,6 +39,19 @@
       color: var(--fg);
       z-index: 10;
     }
+    #clock {
+      position: absolute;
+      right: 1.5em;
+      top: 4.5em;
+      font-size: 1em;
+      color: var(--fg);
+      background: transparent;
+      padding: 0.1em 0.5em;
+      border-radius: 4px;
+      min-width: 180px;
+      text-align: right;
+      letter-spacing: 0.02em;
+    }
     #app-container {
       max-width: 500px; margin: 2.5em auto; background: var(--panel);
       border-radius: 10px; box-shadow: 0 2px 20px rgba(0,0,0,0.2);
@@ -74,6 +87,7 @@
       #app-container { padding: 1em 0.5em 1em 0.5em; }
       .switch-row { flex-direction: column; gap: 0; }
       .switch-row > * { width: 100%; }
+      #clock { top: 5.5em; right: 0.7em; font-size: 0.95em; min-width: 120px; }
     }
 
     /* Light mode */
@@ -96,7 +110,7 @@
   <header>
     <button id="theme-toggle" title="Toggle dark/light mode"></button>
     <h1 style="display:inline-block;">High Fidelity Radio Player</h1>
-    <span id="clock" style="margin-left:1.5em;font-size:1em;vertical-align:middle;"></span>
+    <span id="clock"></span>
     <div style="font-size:1.1em;color:var(--status);">Enter a compatible internet radio stream URL</div>
   </header>
   <div id="app-container">
@@ -392,7 +406,7 @@ function updateClocks() {
   let beats = Math.floor((bmtSeconds / 86.4) % 1000);
   if (beats < 0) beats += 1000;
   document.getElementById('clock').textContent =
-    `Local: ${local} | @${beats.toString().padStart(3, '0')}`;
+    `Local: ${local} | Internet Time: @${beats.toString().padStart(3, '0')}`;
 }
 setInterval(updateClocks, 1000);
 updateClocks();
