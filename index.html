@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>High Fidelity Radio Player</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <!-- SEO Meta Tags -->
   <meta name="description" content="High Fidelity Radio Player: Enhance your favorite internet radio streams with real-time audio effects like expander and exciter. Supports MP3, AAC, and more. Free, open-source, and browser-based.">
   <meta name="keywords" content="internet radio, radio player, high fidelity, audio enhancer, web radio, mp3, aac, streaming, online radio, fx, expander, exciter, open source, browser audio">
@@ -22,135 +22,224 @@
   <meta name="twitter:image" content="https://highfidelityradioplayer.com/cover.jpg">
   <!-- Favicon (optional, recommended for SEO) -->
   <link rel="icon" href="https://highfidelityradioplayer.com/favicon.ico" type="image/x-icon">
+  <meta name="robots" content="index, follow">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "High Fidelity Radio Player",
+    "url": "https://highfidelityradioplayer.com/",
+    "description": "Enhance your favorite internet radio streams with real-time audio effects like expander and exciter. Supports MP3, AAC, and more. Free, open-source, and browser-based."
+  }
+  </script>
   <style id="theme-style">
-    :root {
-      --bg: #181f2a;
-      --fg: #f4f6fa;
-      --panel: #212c3b;
-      --accent: #24b47e;
-      --accent-hover: #007557;
-      --header: #28364a;
-      --tip-bg: #17212f;
-      --border: #2d3d53;
-      --mute: #94a3b8;
-      --status: #fcb900;
-      --processing: #94d82d;
-    }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
-    }
-    header {
-      background: var(--header); padding: 1.5em 0 1em 0; text-align: center; position: relative;
-    }
-    header h1 { margin: 0; font-size: 2em; letter-spacing: 0.05em; }
-    #theme-toggle {
-      position: absolute;
-      right: 1.5em;
-      top: 1.5em;
-      font-size: 1.2em;
-      cursor: pointer;
-      background: none;
-      border: none;
-      color: var(--fg);
-      z-index: 10;
-    }
-    #clock {
-      position: absolute;
-      right: 1.5em;
-      top: 4.5em;
-      font-size: 1em;
-      color: var(--fg);
-      background: transparent;
-      padding: 0.1em 0.5em;
-      border-radius: 4px;
-      min-width: 180px;
-      text-align: right;
-      letter-spacing: 0.02em;
-    }
-    #app-container {
-      max-width: 500px; margin: 2.5em auto; background: var(--panel);
-      border-radius: 10px; box-shadow: 0 2px 20px rgba(0,0,0,0.2);
-      padding: 2em 2em 1em 2em;
-    }
-    label, input, button, select { display: block; width: 100%; }
-    label { margin-bottom: 0.7em; }
-    input[type="text"] {
-      padding: 0.7em; border: none; border-radius: 5px; font-size: 1em; margin-bottom: 1em;
-      background: var(--border); color: var(--fg);
-    }
-    button, select {
-      background: var(--accent); color: #fff; border: none; padding: 0.9em 0;
-      border-radius: 5px; font-size: 1.1em; margin-bottom: 1em; cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover, select:hover { background: var(--accent-hover); }
-    .status { margin: 1em 0 0.5em 0; color: var(--status); font-size: 1em; min-height: 1.5em; }
-    .processing { margin-bottom: 1em; color: var(--processing); font-size: 0.95em; min-height: 1.2em; }
-    .tips {
-      margin-top: 2em; color: var(--mute); font-size: 0.95em;
-      background: var(--tip-bg); padding: 1em; border-radius: 7px;
-    }
-    .switch-row {
-      display: flex; gap: 1em; flex-wrap: wrap; margin-bottom: 1em;
-    }
-    .switch-row > * { flex: 1 1 48%; }
-    #audio-controls { text-align: center; margin-top: 1em; margin-bottom: 1em; }
-    #audio-controls button {
-      width: 46%; display: inline-block; margin: 0 2% 1em 0;
-    }
-    @media (max-width:600px) {
-      #app-container { padding: 1em 0.5em 1em 0.5em; }
-      .switch-row { flex-direction: column; gap: 0; }
-      .switch-row > * { width: 100%; }
-      #clock { top: 5.5em; right: 0.7em; font-size: 0.95em; min-width: 120px; }
-    }
-
-    /* Light mode */
-    .light {
-      --bg: #f5f7fa;
-      --fg: #23262d;
-      --panel: #fff;
-      --accent: #24b47e;
-      --accent-hover: #1d7a56;
-      --header: #d8e3ed;
-      --tip-bg: #f0f4f8;
-      --border: #ececec;
-      --mute: #6b7a90;
-      --status: #fbb900;
-      --processing: #6eb800;
-    }
+  :root {
+    --bg: #10151c;
+    --fg: #ffffff;
+    --panel: #1a2230;
+    --accent: #24b47e;
+    --accent-hover: #007557;
+    --header: #162032;
+    --tip-bg: #232e41;
+    --border: #3a4a62;
+    --mute: #b0bac9;
+    --status: #ffd600;
+    --processing: #94d82d;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  header {
+    background: var(--header); padding: 1.2em 0 1em 0; text-align: center; position: relative;
+  }
+  header h1 { margin: 0; font-size: 2em; letter-spacing: 0.05em; color: #fff; }
+  #theme-toggle {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    font-size: 1.2em;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #ffd600;
+    z-index: 10;
+    padding: 0.3em 0.6em;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  #theme-toggle:active { background: var(--accent-hover); }
+  #clock {
+    position: absolute;
+    right: 1em;
+    top: 4em;
+    font-size: 1em;
+    color: #ffd600;
+    background: transparent;
+    padding: 0.1em 0.5em;
+    border-radius: 4px;
+    min-width: 160px;
+    text-align: right;
+    letter-spacing: 0.02em;
+  }
+  #app-container {
+    max-width: 500px; margin: 2em auto; background: var(--panel);
+    border-radius: 10px; box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    padding: 2em 2em 1em 2em;
+  }
+  label, input, button, select { display: block; width: 100%; }
+  label { margin-bottom: 0.7em; color: #ffd600; font-weight: bold; }
+  input[type="text"] {
+    padding: 0.7em; border: none; border-radius: 5px; font-size: 1em; margin-bottom: 1em;
+    background: var(--border); color: #fff;
+    box-sizing: border-box;
+  }
+  button, select {
+    background: var(--accent); color: #fff; border: none; padding: 0.9em 0;
+    border-radius: 5px; font-size: 1.1em; margin-bottom: 1em; cursor: pointer;
+    transition: background 0.2s;
+    box-sizing: border-box;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+  }
+  button:active, select:active { background: var(--accent-hover); }
+  .status { margin: 1em 0 0.5em 0; color: #ffd600; font-size: 1em; min-height: 1.5em; font-weight: bold; }
+  .processing { margin-bottom: 1em; color: #94d82d; font-size: 0.95em; min-height: 1.2em; font-weight: bold; }
+  .tips {
+    margin-top: 2em; color: #ffd600; font-size: 1em;
+    background: var(--tip-bg); padding: 1em; border-radius: 7px;
+    word-break: break-word;
+    font-weight: bold;
+  }
+  .switch-row {
+    display: flex; gap: 1em; flex-wrap: wrap; margin-bottom: 1em;
+  }
+  .switch-row > * { flex: 1 1 48%; min-width: 120px; }
+  #audio-controls { text-align: center; margin-top: 1em; margin-bottom: 1em; }
+  #audio-controls button {
+    width: 48%; display: inline-block; margin: 0 1% 1em 0;
+    font-size: 1em;
+    padding: 0.7em 0;
+    background: #ffd600;
+    color: #162032;
+    font-weight: bold;
+  }
+  #audio-controls button:last-child { margin-right: 0; }
+  #progressBar {
+    width: 100%; margin: 0.5em 0;
+    touch-action: pan-x;
+    accent-color: #ffd600;
+    background: var(--border);
+  }
+  #levelMeter {
+    margin-top: 0.7em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background: #222;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 220px;
+    height: 16px;
+    box-sizing: border-box;
+  }
+  @media (max-width:600px) {
+    #app-container { padding: 1em 0.5em 1em 0.5em; max-width: 98vw; }
+    .switch-row { flex-direction: column; gap: 0.5em; }
+    .switch-row > * { width: 100%; min-width: 0; }
+    #clock { top: 5.5em; right: 0.7em; font-size: 0.95em; min-width: 120px; }
+    header h1 { font-size: 1.3em; }
+    #audio-controls button { width: 100%; margin: 0 0 1em 0; }
+    #levelMeter { max-width: 100vw; }
+  }
+  @media (max-width:400px) {
+    #app-container { padding: 0.5em 0.2em 1em 0.2em; }
+    #clock { font-size: 0.85em; }
+    header h1 { font-size: 1em; }
+  }
+  /* Light mode */
+  .light {
+    --bg: #f5f7fa;
+    --fg: #23262d;
+    --panel: #fff;
+    --accent: #24b47e;
+    --accent-hover: #1d7a56;
+    --header: #d8e3ed;
+    --tip-bg: #f0f4f8;
+    --border: #ececec;
+    --mute: #6b7a90;
+    --status: #fbb900;
+    --processing: #6eb800;
+  }
   </style>
 </head>
 <body>
   <header>
-    <button id="theme-toggle" title="Toggle dark/light mode"></button>
+    <button id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark or light mode"></button>
     <h1 style="display:inline-block;">High Fidelity Radio Player</h1>
     <span id="clock"></span>
     <div style="font-size:1.1em;color:var(--status);">Your favourite internet radio stream, enhanced!</div>
   </header>
   <main>
     <div id="app-container">
-      <label for="streamUrl"><b>Stream URL:</b></label>
-      <input id="streamUrl" type="text" placeholder="e.g. https://radio.example.com/stream" autocomplete="off">
-      <div class="switch-row">
-        <select id="orderSelect">
-          <option value="expander-exciter">Expander → Exciter</option>
-          <option value="exciter-expander">Exciter → Expander</option>
-        </select>
-      </div>
+      <h2>Stream Player</h2>
+      <form onsubmit="return false;">
+        <label for="streamUrl"><b>Stream URL:</b></label>
+        <input id="streamUrl" type="text" placeholder="e.g. https://radio.example.com/stream" autocomplete="off">
+        <div class="switch-row">
+          <label for="orderSelect"><b>Audio FX Order:</b></label>
+          <select id="orderSelect">
+            <option value="expander-exciter">Expander → Exciter</option>
+            <option value="exciter-expander">Exciter → Expander</option>
+          </select>
+        </div>
+        <div class="switch-row">
+          <label for="autoEqSelect"><b>AutoEQ (Headphones/Earbuds):</b></label>
+          <select id="autoEqSelect">
+            <option value="">None</option>
+            <optgroup label="Top 10 Headphones">
+              <option value="hd650">Sennheiser HD 650</option>
+              <option value="dt990">Beyerdynamic DT 990 Pro</option>
+              <option value="m50x">Audio-Technica ATH-M50x</option>
+              <option value="qc35">Bose QuietComfort 35 II</option>
+              <option value="xm4">Sony WH-1000XM4</option>
+              <option value="hd600">Sennheiser HD 600</option>
+              <option value="he400i">HIFIMAN HE400i</option>
+              <option value="k701">AKG K701</option>
+              <option value="sr80e">Grado SR80e</option>
+              <option value="dt770">Beyerdynamic DT 770 Pro</option>
+            </optgroup>
+            <optgroup label="Top 10 Earbuds">
+              <option value="airpodspro">Apple AirPods Pro</option>
+              <option value="galaxybuds">Samsung Galaxy Buds+</option>
+              <option value="wf1000xm4">Sony WF-1000XM4</option>
+              <option value="freebuds">Huawei FreeBuds Pro</option>
+              <option value="pixelbuds">Google Pixel Buds A-Series</option>
+              <option value="soundcore">Anker Soundcore Liberty Air 2 Pro</option>
+              <option value="jabra75t">Jabra Elite 75t</option>
+              <option value="oneplusbuds">OnePlus Buds Pro</option>
+              <option value="beatsfit">Beats Fit Pro</option>
+              <option value="sennmomentum">Sennheiser Momentum True Wireless 2</option>
+            </optgroup>
+          </select>
+        </div>
+      </form>
+      <h3>Audio Controls</h3>
       <div id="audio-controls">
-        <button id="playBtn">Play Stream</button>
-        <button id="pauseBtn">Pause</button>
-        <button id="stopBtn">Stop</button>
-        <button id="muteBtn">Mute</button>
+        <button id="playBtn" aria-label="Play Stream">Play Stream</button>
+        <button id="pauseBtn" aria-label="Pause">Pause</button>
+        <button id="stopBtn" aria-label="Stop">Stop</button>
+        <button id="muteBtn" aria-label="Mute">Mute</button>
         <div style="margin-top:0.5em;">
-          <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;">
+          <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;" aria-label="Seek Bar">
           <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
         </div>
-        <canvas id="levelMeter" width="220" height="16" style="margin-top:0.7em;display:block;margin-left:auto;margin-right:auto;background:#222;border-radius:4px;"></canvas>
+        <canvas id="levelMeter" width="220" height="16" style="margin-top:0.7em;display:block;margin-left:auto;margin-right:auto;background:#222;border-radius:4px;" aria-label="Stereo Audio Level Meter"></canvas>
       </div>
       <div class="status" id="songinfo">No stream loaded.</div>
       <div class="processing" id="processingStatus">
@@ -159,12 +248,15 @@
       <!-- Hidden audio element -->
       <audio id="audio" crossorigin="anonymous"></audio>
       <div class="tips">
-        <b>Tips:</b>
+        <h3>Tips</h3>
         <ul>
           <li>Works best with streams that support CORS and standard codecs (MP3/AAC).</li>
           <li>If song info isn’t shown, the stream may not send track metadata or allow access from browsers.</li>
           <li>All audio is enhanced in real time with FX: Expander, Exciter.</li>
           <li>Change the FX order for alternate sound textures.</li>
+          <li>
+            <b>AutoEQ:</b> Select your headphones or earbuds from the AutoEQ dropdown to apply a tailored equalizer profile for more accurate sound. Supported models include the 10 most popular headphones and 10 most popular earbuds (including Sony MDR-7506, AirPods 2, AirPods 3).
+          </li>
           <li>
             <b>Auto-populate the stream URL:</b> Add <code>?stream=https://radio.example.com/stream</code> to the page URL.<br>
             Example: <code>https://highfidelityradioplayer.com/index.html?stream=https://radio.example.com/stream</code>
@@ -220,6 +312,29 @@ function drawLevelMeter(level) {
   ctx2d.fillRect(0, 0, w, levelMeter.height);
 }
 
+// Replace your drawLevelMeter function with this stereo version
+function drawLevelMeterStereo(left, right) {
+  const ctx2d = levelMeter.getContext('2d');
+  ctx2d.clearRect(0, 0, levelMeter.width, levelMeter.height);
+  // Background bar
+  ctx2d.fillStyle = '#333';
+  ctx2d.fillRect(0, 0, levelMeter.width, levelMeter.height);
+
+  // Left channel
+  const wL = Math.max(2, left * (levelMeter.width / 2 - 2));
+  ctx2d.fillStyle = left > 0.85 ? '#f55' : (left > 0.6 ? '#fc0' : '#3fa');
+  ctx2d.fillRect(1, 1, wL, levelMeter.height - 2);
+
+  // Right channel
+  const wR = Math.max(2, right * (levelMeter.width / 2 - 2));
+  ctx2d.fillStyle = right > 0.85 ? '#f55' : (right > 0.6 ? '#fc0' : '#3fa');
+  ctx2d.fillRect(levelMeter.width / 2 + 1, 1, wR, levelMeter.height - 2);
+
+  // Divider
+  ctx2d.fillStyle = '#222';
+  ctx2d.fillRect(levelMeter.width / 2 - 1, 0, 2, levelMeter.height);
+}
+
 // Start meter animation
 function startLevelMeter() {
   if (!analyser) {
@@ -238,13 +353,16 @@ function startLevelMeter() {
   function animate() {
     const data = new Uint8Array(analyser.fftSize);
     analyser.getByteTimeDomainData(data);
-    // Calculate peak level (normalized 0..1)
-    let peak = 0;
-    for (let i = 0; i < data.length; i++) {
-      const v = (data[i] - 128) / 128;
-      peak = Math.max(peak, Math.abs(v));
+
+    // Stereo peak calculation (assumes interleaved L/R samples)
+    let peakL = 0, peakR = 0;
+    for (let i = 0; i < data.length; i += 2) {
+      const vL = (data[i] - 128) / 128;
+      const vR = (data[i + 1] - 128) / 128;
+      peakL = Math.max(peakL, Math.abs(vL));
+      peakR = Math.max(peakR, Math.abs(vR));
     }
-    drawLevelMeter(peak);
+    drawLevelMeterStereo(peakL, peakR);
     meterAnimId = requestAnimationFrame(animate);
   }
   animate();
@@ -253,7 +371,7 @@ function startLevelMeter() {
 // Stop meter animation
 function stopLevelMeter() {
   if (meterAnimId) cancelAnimationFrame(meterAnimId);
-  drawLevelMeter(0);
+  drawLevelMeterStereo(0, 0);
 }
 
 function setTheme(mode) {
@@ -348,6 +466,13 @@ playBtn.onclick = () => {
 
   fetchSongInfo(url);
   startLevelMeter();
+
+  // AutoEQ: Apply selected profile if available
+  const eqVal = document.getElementById('autoEqSelect').value;
+  if (autoEqProfiles[eqVal]) {
+    applyAutoEq(autoEqProfiles[eqVal]);
+    songinfo.textContent = "AutoEQ applied: " + document.getElementById('autoEqSelect').options[document.getElementById('autoEqSelect').selectedIndex].text;
+  }
 };
 
 stopBtn.onclick = () => {
@@ -454,6 +579,149 @@ updateFxChainLabel();
     // playBtn.click();
   }
 })();
+
+// Example AutoEQ profiles (gain values in dB for 10 bands: 32, 64, 125, 250, 500, 1k, 2k, 4k, 8k, 16k)
+const autoEqProfiles = {
+  hd650:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  dt990:    [1, 0, -2, -3, 0, 2, 4, 3, 1, 0],
+  m50x:     [0, 1, 0, -1, 1, 2, 2, 1, 0, -1],
+  qc35:     [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  xm4:      [0, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  hd600:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  he400i:   [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  k701:     [0, 0, -2, -3, 0, 2, 4, 3, 1, 0],
+  sr80e:    [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  dt770:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  airpodspro: [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  galaxybuds: [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  wf1000xm4:  [0, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  freebuds:   [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  pixelbuds:  [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  soundcore:  [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  jabra75t:   [0, 0, -2, -3, 0, 2, 4, 3, 1, 0],
+  oneplusbuds:[1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  beatsfit:   [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  sennmomentum:[1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  mdr7506:   [0, 0, -2, -2, 0, 2, 3, 2, 1, 0],      // Sony MDR-7506
+  airpods2:  [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],       // Apple AirPods 2
+  airpods3:  [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],       // Apple AirPods 3
+};
+
+let eqNodes = [];
+
+function applyAutoEq(profile) {
+  // Disconnect previous EQ nodes
+  if (eqNodes.length && gainNode) {
+    eqNodes.forEach(node => node.disconnect());
+    eqNodes = [];
+  }
+  if (!profile || !gainNode) return;
+
+  // Create 10 band EQ (BiquadFilterNode)
+  let lastNode = gainNode;
+  profile.forEach((gain, i) => {
+    const freqs = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+    const eq = ctx.createBiquadFilter();
+    eq.type = "peaking";
+    eq.frequency.value = freqs[i];
+    eq.Q.value = 1.2;
+    eq.gain.value = gain;
+    lastNode.disconnect();
+    lastNode.connect(eq);
+    lastNode = eq;
+    eqNodes.push(eq);
+  });
+  // Connect last EQ node to destination
+  lastNode.connect(ctx.destination);
+}
+
+// Listen for dropdown changes
+document.getElementById('autoEqSelect').onchange = function() {
+  const val = this.value;
+  if (autoEqProfiles[val]) {
+    applyAutoEq(autoEqProfiles[val]);
+    songinfo.textContent = "AutoEQ applied: " + this.options[this.selectedIndex].text;
+  } else {
+    // Remove EQ
+    if (eqNodes.length && gainNode) {
+      eqNodes.forEach(node => node.disconnect());
+      gainNode.connect(ctx.destination);
+      eqNodes = [];
+      songinfo.textContent = "AutoEQ disabled.";
+    }
+  }
+};
+
+// Re-apply EQ after playback starts
+playBtn.onclick = () => {
+  const url = urlInput.value.trim();
+  if (!url) {
+    songinfo.textContent = 'Please enter a stream URL.';
+    return;
+  }
+  audio.src = url;
+  audio.play().catch(e => {
+    songinfo.textContent = 'Unable to play stream. Check the URL and CORS support.';
+  });
+
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (src) src.disconnect();
+  if (analyser) analyser.disconnect();
+
+  src = ctx.createMediaElementSource(audio);
+  const p = getFxParamsAuto();
+
+  // ==== Expander (DynamicsCompressor in auto mode) ====
+  expander = ctx.createDynamicsCompressor();
+  // Raise the output of the expander by increasing its threshold
+  expander.threshold.value = -30; // Was -50, now -30 for higher output level
+  expander.ratio.value = 1.5; // Gentler expansion
+
+  // ==== Exciter ====
+  exciter = ctx.createWaveShaper();
+  // Set exciter to low (less harmonic distortion)
+  function makeExciterCurve(amount = 1) { // amount lowered from 2 to 1
+    const n_samples = 44100;
+    const curve = new Float32Array(n_samples);
+    for (let i = 0; i < n_samples; ++i) {
+      let x = i * 2 / n_samples - 1;
+      curve[i] = Math.tanh(amount * x);
+    }
+    return curve;
+  }
+  exciter.curve = makeExciterCurve(1); // use low exciter amount
+  exciter.oversample = '4x';
+
+  // ==== Gain node for loudness normalization ====
+  if (gainNode) gainNode.disconnect();
+  gainNode = ctx.createGain();
+  // Set gain for approx 0 dB RMS (0 dBFS = gain 1.0)
+  gainNode.gain.value = 1.0;
+
+  // ---- Chain order switch ----
+  let nodeA, nodeB;
+  if (orderSelect.value === 'expander-exciter') {
+    nodeA = expander; nodeB = exciter;
+    processingStatus.style.color = "var(--processing)";
+  } else {
+    nodeA = exciter; nodeB = expander;
+    processingStatus.style.color = "#66aaff";
+  }
+  src.connect(nodeA);
+  nodeA.connect(nodeB);
+  nodeB.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  fetchSongInfo(url);
+  startLevelMeter();
+
+  // AutoEQ: Apply selected profile if available
+  const eqVal = document.getElementById('autoEqSelect').value;
+  if (autoEqProfiles[eqVal]) {
+    applyAutoEq(autoEqProfiles[eqVal]);
+    songinfo.textContent = "AutoEQ applied: " + document.getElementById('autoEqSelect').options[document.getElementById('autoEqSelect').selectedIndex].text;
+  }
+};
 </script>
 </body>
 </html>
