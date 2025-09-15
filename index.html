@@ -187,88 +187,13 @@
   </header>
   <main>
     <div id="app-container">
-      <h2>Stream Player</h2>
-      <form onsubmit="return false;">
-        <label for="streamUrl"><b>Stream URL:</b></label>
-        <input id="streamUrl" type="text" placeholder="e.g. https://radio.example.com/stream" autocomplete="off">
-        <div class="switch-row">
-          <label for="orderSelect"><b>Audio FX Order:</b></label>
-          <select id="orderSelect">
-            <option value="expander-exciter">Expander → Exciter</option>
-            <option value="exciter-expander">Exciter → Expander</option>
-          </select>
-        </div>
-        <div class="switch-row">
-          <label for="autoEqSelect"><b>AutoEQ (Headphones/Earbuds):</b></label>
-          <select id="autoEqSelect">
-            <option value="">None</option>
-            <optgroup label="Top 10 Headphones">
-              <option value="hd650">Sennheiser HD 650</option>
-              <option value="dt990">Beyerdynamic DT 990 Pro</option>
-              <option value="m50x">Audio-Technica ATH-M50x</option>
-              <option value="qc35">Bose QuietComfort 35 II</option>
-              <option value="xm4">Sony WH-1000XM4</option>
-              <option value="hd600">Sennheiser HD 600</option>
-              <option value="he400i">HIFIMAN HE400i</option>
-              <option value="k701">AKG K701</option>
-              <option value="sr80e">Grado SR80e</option>
-              <option value="dt770">Beyerdynamic DT 770 Pro</option>
-            </optgroup>
-            <optgroup label="Top 10 Earbuds">
-              <option value="airpodspro">Apple AirPods Pro</option>
-              <option value="galaxybuds">Samsung Galaxy Buds+</option>
-              <option value="wf1000xm4">Sony WF-1000XM4</option>
-              <option value="freebuds">Huawei FreeBuds Pro</option>
-              <option value="pixelbuds">Google Pixel Buds A-Series</option>
-              <option value="soundcore">Anker Soundcore Liberty Air 2 Pro</option>
-              <option value="jabra75t">Jabra Elite 75t</option>
-              <option value="oneplusbuds">OnePlus Buds Pro</option>
-              <option value="beatsfit">Beats Fit Pro</option>
-              <option value="sennmomentum">Sennheiser Momentum True Wireless 2</option>
-            </optgroup>
-          </select>
-        </div>
-      </form>
-      <h3>Audio Controls</h3>
-      <div id="audio-controls">
-        <button id="playBtn" aria-label="Play Stream">Play Stream</button>
-        <button id="pauseBtn" aria-label="Pause">Pause</button>
-        <button id="stopBtn" aria-label="Stop">Stop</button>
-        <button id="muteBtn" aria-label="Mute">Mute</button>
-        <div style="margin-top:0.5em;">
-          <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;" aria-label="Seek Bar">
-          <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
-        </div>
-        <canvas id="levelMeter" width="220" height="16" style="margin-top:0.7em;display:block;margin-left:auto;margin-right:auto;background:#222;border-radius:4px;" aria-label="Stereo Audio Level Meter"></canvas>
-      </div>
-      <div class="status" id="songinfo">No stream loaded.</div>
-      <div class="processing" id="processingStatus">
-        Audio FX Chain: <span id="fxChainLabel">Expander → Exciter</span>
-      </div>
-      <!-- Hidden audio element -->
-      <audio id="audio" crossorigin="anonymous"></audio>
-      <div class="tips">
-        <h3>Tips</h3>
-        <ul>
-          <li>Works best with streams that support CORS and standard codecs (MP3/AAC).</li>
-          <li>If song info isn’t shown, the stream may not send track metadata or allow access from browsers.</li>
-          <li>All audio is enhanced in real time with FX: Expander, Exciter.</li>
-          <li>Change the FX order for alternate sound textures.</li>
-          <li>
-            <b>AutoEQ:</b> Select your headphones or earbuds from the AutoEQ dropdown to apply a tailored equalizer profile for more accurate sound. Supported models include the 10 most popular headphones and 10 most popular earbuds (including Sony MDR-7506, AirPods 2, AirPods 3).
-          </li>
-          <li>
-            <b>Auto-populate the stream URL:</b> Add <code>?stream=https://radio.example.com/stream</code> to the page URL.<br>
-            Example: <code>https://highfidelityradioplayer.com/index.html?stream=https://radio.example.com/stream</code>
-          </li>
-          <li>If a stream does not play, it may be due to browser security (CORS), unsupported codecs, or HTTP/HTTPS mismatch.</li>
-          <li>If a stream fails, try opening it directly in your browser. Some streams may only work without audio FX due to browser security.</li>
-          <li>Use the <b>Mute</b> button to toggle sound on/off.</li>
-          <li>Click the <b>Play Stream</b> button to start playback.</li>
-          <li>On mobile, press "Add to home screen" in your browser for easy access.</li>
-          <li>For best performance, use a modern browser like Chrome, Firefox, or Edge.</li>
-        </ul>
-      </div>
+      <p style="color:var(--fg); margin:0 0 1em 0;">
+        If you are looking for quality radio streams look here:
+        <a href="https://www.webradiostreams.nl/" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline;">
+          https://www.webradiostreams.nl/
+        </a>
+        not all are compitble; chose the ones who end in .mp3 or .aac
+      </p>
     </div>
   </main>
   <div id="frame" style="width: 100%;margin: auto;background: rgba(0, 0, 0, 0.50);position: relative; z-index: 99998;">
