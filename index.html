@@ -186,6 +186,66 @@
     <div style="font-size:1.1em;color:var(--status);">Your favourite internet radio stream, enhanced!</div>
   </header>
   <main>
+    <div id="app-container">
+      <audio id="audio" crossOrigin="anonymous"></audio>
+      <label for="streamUrl">Stream URL:</label>
+      <input type="text" id="streamUrl" placeholder="Enter radio stream URL (MP3, AAC...)" value="https://stream.rgr.fm/live.mp3">
+      <div id="audio-controls">
+        <button id="playBtn">Play</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="stopBtn">Stop</button>
+        <button id="muteBtn">Mute</button>
+      </div>
+      <div style="display: flex; align-items: center; gap: 1em; margin-bottom: 1em;">
+        <span id="currentTime">00:00</span>
+        <input type="range" id="progressBar" value="0" step="1" style="flex: 1;">
+        <span id="duration">--:--</span>
+      </div>
+      <div class="status" id="songinfo">No stream loaded.</div>
+      <div class="processing" id="processingStatus"></div>
+      <canvas id="levelMeter"></canvas>
+      <div class="switch-row">
+        <div>
+          <label for="orderSelect" id="fxChainLabel">FX Chain Order</label>
+          <select id="orderSelect">
+            <option value="expander-exciter">Expander → Exciter</option>
+            <option value="exciter-expander">Exciter → Expander</option>
+          </select>
+        </div>
+        <div>
+          <label for="autoEqSelect">Headphone AutoEQ</label>
+          <select id="autoEqSelect">
+            <option value="">Disabled</option>
+            <option value="hd650">Sennheiser HD 650</option>
+            <option value="dt990">Beyerdynamic DT 990 Pro</option>
+            <option value="m50x">Audio-Technica ATH-M50x</option>
+            <option value="qc35">Bose QuietComfort 35</option>
+            <option value="xm4">Sony WH-1000XM4</option>
+            <option value="hd600">Sennheiser HD 600</option>
+            <option value="he400i">HIFIMAN HE400i</option>
+            <option value="k701">AKG K701</option>
+            <option value="sr80e">Grado SR80e</option>
+            <option value="dt770">Beyerdynamic DT 770 Pro</option>
+            <option value="airpodspro">Apple AirPods Pro</option>
+            <option value="galaxybuds">Samsung Galaxy Buds</option>
+            <option value="wf1000xm4">Sony WF-1000XM4</option>
+            <option value="freebuds">Huawei FreeBuds Pro</option>
+            <option value="pixelbuds">Google Pixel Buds</option>
+            <option value="soundcore">Anker Soundcore Liberty Air 2</option>
+            <option value="jabra75t">Jabra Elite 75t</option>
+            <option value="oneplusbuds">OnePlus Buds</option>
+            <option value="beatsfit">Beats Fit Pro</option>
+            <option value="sennmomentum">Sennheiser Momentum True Wireless 2</option>
+            <option value="mdr7506">Sony MDR-7506</option>
+            <option value="airpods2">Apple AirPods 2</option>
+            <option value="airpods3">Apple AirPods 3</option>
+          </select>
+        </div>
+      </div>
+      <div class="tips">
+        <b>Tip:</b> For best results, use a high-bitrate stream (128kbps+). Some streams may not have CORS headers, preventing playback.
+      </div>
+    </div>
   </main>
   <div id="frame" style="width: 100%;margin: auto;background: rgba(0, 0, 0, 0.50);position: relative; z-index: 99998;">
     <iframe data-aa='2405890' src='//acceptable.a-ads.com/2405890/?size=Adaptive'
@@ -439,14 +499,6 @@ function formatTime(sec) {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-// Reset controls on stop
-stopBtn.onclick = () => {
-  audio.pause();
-  audio.src = '';
-  songinfo.textContent = 'No stream loaded.';
-  if (src) src.disconnect();
-};
-
 // ---- Song Info Fetching ----
 // (remains the same)
 function fetchSongInfo(url) {
@@ -565,77 +617,6 @@ document.getElementById('autoEqSelect').onchange = function() {
       eqNodes = [];
       songinfo.textContent = "AutoEQ disabled.";
     }
-  }
-};
-
-// Re-apply EQ after playback starts
-playBtn.onclick = () => {
-  const url = urlInput.value.trim();
-  if (!url) {
-    songinfo.textContent = 'Please enter a stream URL.';
-    return;
-  }
-  audio.src = url;
-  audio.play().catch(e => {
-    songinfo.textContent = 'Unable to play stream. Check the URL and CORS support.';
-  });
-
-  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-  if (src) src.disconnect();
-  if (analyser) analyser.disconnect();
-
-  src = ctx.createMediaElementSource(audio);
-  const p = getFxParamsAuto();
-
-  // ==== Expander (DynamicsCompressor in auto mode) ====
-  expander = ctx.createDynamicsCompressor();
-  // Raise the output of the expander by increasing its threshold
-  expander.threshold.value = -30; // Was -50, now -30 for higher output level
-  expander.ratio.value = 1.5; // Gentler expansion
-
-  // ==== Exciter ====
-  exciter = ctx.createWaveShaper();
-  // Set exciter to low (less harmonic distortion)
-  function makeExciterCurve(amount = 1) { // amount lowered from 2 to 1
-    const n_samples = 44100;
-    const curve = new Float32Array(n_samples);
-    for (let i = 0; i < n_samples; ++i) {
-      let x = i * 2 / n_samples - 1;
-      curve[i] = Math.tanh(amount * x);
-    }
-    return curve;
-  }
-  exciter.curve = makeExciterCurve(1); // use low exciter amount
-  exciter.oversample = '4x';
-
-  // ==== Gain node for loudness normalization ====
-  if (gainNode) gainNode.disconnect();
-  gainNode = ctx.createGain();
-  // Set gain for approx 0 dB RMS (0 dBFS = gain 1.0)
-  gainNode.gain.value = 1.0;
-
-  // ---- Chain order switch ----
-  let nodeA, nodeB;
-  if (orderSelect.value === 'expander-exciter') {
-    nodeA = expander; nodeB = exciter;
-    processingStatus.style.color = "var(--processing)";
-  } else {
-    nodeA = exciter; nodeB = expander;
-    processingStatus.style.color = "#66aaff";
-  }
-  src.connect(nodeA);
-  nodeA.connect(nodeB);
-  nodeB.connect(gainNode);
-  gainNode.connect(ctx.destination);
-
-  fetchSongInfo(url);
-  startLevelMeter();
-
-  // AutoEQ: Apply selected profile if available
-  const eqVal = document.getElementById('autoEqSelect').value;
-  if (autoEqProfiles[eqVal]) {
-    applyAutoEq(autoEqProfiles[eqVal]);
-    songinfo.textContent = "AutoEQ applied: " + document.getElementById('autoEqSelect').options[document.getElementById('autoEqSelect').selectedIndex].text;
   }
 };
 </script>
