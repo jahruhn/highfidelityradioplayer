@@ -1,0 +1,33 @@
+High Fidelity Radio Player
+
+# High Fidelity Radio Player
+
+High Fidelity Radio Player is a small, browser-based internet radio player that enhances streams with real-time audio effects (expander, exciter) and optional AutoEQ headphone/earbud profiles.
+
+Features
+- Real-time audio FX chain: Expander → Exciter (order selectable) — implemented in [index.html](index.html) via functions like [`getFxParamsAuto`](index.html) and [`makeExciterCurve`](index.html).
+- Stereo level meter and analyser driven by [`startLevelMeter`](index.html).
+- AutoEQ profiles (10-band peaking EQ) selectable from the UI and applied with [`applyAutoEq`](index.html). Profiles are defined in the [`autoEqProfiles`](index.html) object.
+- Song/stream connection info fetched by [`fetchSongInfo`](index.html).
+- Lightweight single-file web UI: open [index.html](index.html) in a modern browser (Chrome, Firefox, Edge).
+
+Quick start
+1. Open the local file [index.html](index.html) in your browser or host the folder on a static web server.
+2. Paste a stream URL into the Stream URL field and click "Play Stream".
+3. Optionally select an AutoEQ profile or change the FX order.
+
+URL parameter
+- You can auto-populate the stream input by adding a query parameter:
+  - Example: https://highfidelityradioplayer.com/index.html?stream=https://radio.example.com/stream
+
+Notes
+- Streams must support CORS and use browser-compatible codecs (MP3/AAC) for in-page playback with audio FX.
+- If metadata (ICY) is not available or the server blocks cross-origin requests, the player will still attempt playback but may not show song info.
+- The project is licensed under the terms in [LICENSE](LICENSE).
+
+Files
+- Main UI and audio logic: [index.html](index.html)
+- License: [LICENSE](LICENSE)
+- Sitemap: [sitemap.xml](sitemap.xml)
+- CNAME: [CNAME](CNAME)
+- About page: [about.html](about.html)
