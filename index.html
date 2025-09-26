@@ -181,474 +181,547 @@
 <body>
   <header>
     <button id="theme-toggle" title="Toggle dark/light mode" aria-label="Toggle dark or light mode"></button>
-    <h1 style="display:inline-block;margin-right:0.5em;">High Fidelity Radio Player</h1>
-    <a id="about-link" href="about.html" style="color:var(--accent); text-decoration:underline; font-weight:bold; vertical-align:middle; margin-right:0.6em;">About</a>
+    <h1 style="display:inline-block;">High Fidelity Radio Player</h1>
     <span id="clock"></span>
     <div style="font-size:1.1em;color:var(--status);">Your favourite internet radio stream, enhanced!</div>
   </header>
   <main>
     <div id="app-container">
-      <p style="margin-top:0.5em; color:var(--fg); font-size:0.95em;">
-        GitHub: <a href="https://github.com/jahruhn" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline;">https://github.com/jahruhn</a>
-      </p>
+      <h2>Stream Player</h2>
+      <form onsubmit="return false;">
+        <label for="streamUrl"><b>Stream URL:</b></label>
+        <input id="streamUrl" type="text" placeholder="e.g. https://radio.example.com/stream" autocomplete="off">
+        <div class="switch-row">
+          <label for="orderSelect"><b>Audio FX Order:</b></label>
+          <select id="orderSelect">
+            <option value="expander-exciter">Expander → Exciter</option>
+            <option value="exciter-expander">Exciter → Expander</option>
+          </select>
+        </div>
+        <div class="switch-row">
+          <label for="autoEqSelect"><b>AutoEQ (Headphones/Earbuds):</b></label>
+          <select id="autoEqSelect">
+            <option value="">None</option>
+            <optgroup label="Top 10 Headphones">
+              <option value="hd650">Sennheiser HD 650</option>
+              <option value="dt990">Beyerdynamic DT 990 Pro</option>
+              <option value="m50x">Audio-Technica ATH-M50x</option>
+              <option value="qc35">Bose QuietComfort 35 II</option>
+              <option value="xm4">Sony WH-1000XM4</option>
+              <option value="hd600">Sennheiser HD 600</option>
+              <option value="he400i">HIFIMAN HE400i</option>
+              <option value="k701">AKG K701</option>
+              <option value="sr80e">Grado SR80e</option>
+              <option value="dt770">Beyerdynamic DT 770 Pro</option>
+            </optgroup>
+            <optgroup label="Top 10 Earbuds">
+              <option value="airpodspro">Apple AirPods Pro</option>
+              <option value="galaxybuds">Samsung Galaxy Buds+</option>
+              <option value="wf1000xm4">Sony WF-1000XM4</option>
+              <option value="freebuds">Huawei FreeBuds Pro</option>
+              <option value="pixelbuds">Google Pixel Buds A-Series</option>
+              <option value="soundcore">Anker Soundcore Liberty Air 2 Pro</option>
+              <option value="jabra75t">Jabra Elite 75t</option>
+              <option value="oneplusbuds">OnePlus Buds Pro</option>
+              <option value="beatsfit">Beats Fit Pro</option>
+              <option value="sennmomentum">Sennheiser Momentum True Wireless 2</option>
+            </optgroup>
+          </select>
+        </div>
+      </form>
+      <h3>Audio Controls</h3>
+      <div id="audio-controls">
+        <button id="playBtn" aria-label="Play Stream">Play Stream</button>
+        <button id="pauseBtn" aria-label="Pause">Pause</button>
+        <button id="stopBtn" aria-label="Stop">Stop</button>
+        <button id="muteBtn" aria-label="Mute">Mute</button>
+        <div style="margin-top:0.5em;">
+          <input id="progressBar" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;" aria-label="Seek Bar">
+          <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
+        </div>
+        <canvas id="levelMeter" width="220" height="16" style="margin-top:0.7em;display:block;margin-left:auto;margin-right:auto;background:#222;border-radius:4px;" aria-label="Stereo Audio Level Meter"></canvas>
+      </div>
+      <div class="status" id="songinfo">No stream loaded.</div>
+      <div class="processing" id="processingStatus">
+        Audio FX Chain: <span id="fxChainLabel">Expander → Exciter</span>
+      </div>
+      <!-- Hidden audio element -->
+      <audio id="audio" crossorigin="anonymous"></audio>
+      <div class="tips">
+        <h3>Tips</h3>
+        <ul>
+          <li>Works best with streams that support CORS and standard codecs (MP3/AAC).</li>
+          <li>If song info isn’t shown, the stream may not send track metadata or allow access from browsers.</li>
+          <li>All audio is enhanced in real time with FX: Expander, Exciter.</li>
+          <li>Change the FX order for alternate sound textures.</li>
+          <li>
+            <b>AutoEQ:</b> Select your headphones or earbuds from the AutoEQ dropdown to apply a tailored equalizer profile for more accurate sound. Supported models include the 10 most popular headphones and 10 most popular earbuds (including Sony MDR-7506, AirPods 2, AirPods 3).
+          </li>
+          <li>
+            <b>Auto-populate the stream URL:</b> Add <code>?stream=https://radio.example.com/stream</code> to the page URL.<br>
+            Example: <code>https://highfidelityradioplayer.com/index.html?stream=https://radio.example.com/stream</code>
+          </li>
+          <li>If a stream does not play, it may be due to browser security (CORS), unsupported codecs, or HTTP/HTTPS mismatch.</li>
+          <li>If a stream fails, try opening it directly in your browser. Some streams may only work without audio FX due to browser security.</li>
+          <li>Use the <b>Mute</b> button to toggle sound on/off.</li>
+          <li>Click the <b>Play Stream</b> button to start playback.</li>
+          <li>On mobile, press "Add to home screen" in your browser for easy access.</li>
+          <li>For best performance, use a modern browser like Chrome, Firefox, or Edge.</li>
+        </ul>
+      </div>
     </div>
   </main>
-  <!-- Ads removed -->
+  <div id="frame" style="width: 100%;margin: auto;background: rgba(0, 0, 0, 0.50);position: relative; z-index: 99998;">
+    <iframe data-aa='2405890' src='//acceptable.a-ads.com/2405890/?size=Adaptive'
+      style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+    <div style="width: 70%;margin:auto;position: absolute;left: 0;right: 0">
+      <a target="_blank" style="display:inline-block;font-size: 13px;color: #263238;padding: 4px 10px;background: #F8F8F9;text-decoration: none; border-radius: 0 0 4px 4px;" id="frame-link" href="https://aads.com/campaigns/new/?source_id=2405890&source_type=ad_unit&partner=2405890">Advertise here</a>
+    </div>
+  </div>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  // Ensure required elements exist; if not, log and abort to avoid runtime errors
-  const requiredIds = ['audio','playBtn','pauseBtn','stopBtn','muteBtn','streamUrl','songinfo','processingStatus','theme-toggle','orderSelect','fxChainLabel','progressBar','currentTime','duration','levelMeter','autoEqSelect'];
-  for (const id of requiredIds) {
-    if (!document.getElementById(id)) {
-      console.warn('Missing element with id:', id);
-      // continue — script will guard further usage, but aborting early prevents exceptions
+const audio = document.getElementById('audio');
+const playBtn = document.getElementById('playBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const stopBtn = document.getElementById('stopBtn');
+const muteBtn = document.getElementById('muteBtn');
+const urlInput = document.getElementById('streamUrl');
+const songinfo = document.getElementById('songinfo');
+const processingStatus = document.getElementById('processingStatus');
+const themeToggle = document.getElementById('theme-toggle');
+const orderSelect = document.getElementById('orderSelect');
+const fxChainLabel = document.getElementById('fxChainLabel');
+const progressBar = document.getElementById('progressBar');
+const currentTimeLabel = document.getElementById('currentTime');
+const durationLabel = document.getElementById('duration');
+const levelMeter = document.getElementById('levelMeter');
+
+let ctx, src, expander, exciter, gainNode, analyser;
+
+let meterAnimId = null;
+
+// Draw level meter (simple peak)
+function drawLevelMeter(level) {
+  const ctx2d = levelMeter.getContext('2d');
+  ctx2d.clearRect(0, 0, levelMeter.width, levelMeter.height);
+  // Background bar
+  ctx2d.fillStyle = '#333';
+  ctx2d.fillRect(0, 0, levelMeter.width, levelMeter.height);
+  // Level bar
+  const w = Math.max(2, level * levelMeter.width);
+  ctx2d.fillStyle = level > 0.85 ? '#f55' : (level > 0.6 ? '#fc0' : '#3fa');
+  ctx2d.fillRect(0, 0, w, levelMeter.height);
+}
+
+// Replace your drawLevelMeter function with this stereo version
+function drawLevelMeterStereo(left, right) {
+  const ctx2d = levelMeter.getContext('2d');
+  ctx2d.clearRect(0, 0, levelMeter.width, levelMeter.height);
+  // Background bar
+  ctx2d.fillStyle = '#333';
+  ctx2d.fillRect(0, 0, levelMeter.width, levelMeter.height);
+
+  // Left channel
+  const wL = Math.max(2, left * (levelMeter.width / 2 - 2));
+  ctx2d.fillStyle = left > 0.85 ? '#f55' : (left > 0.6 ? '#fc0' : '#3fa');
+  ctx2d.fillRect(1, 1, wL, levelMeter.height - 2);
+
+  // Right channel
+  const wR = Math.max(2, right * (levelMeter.width / 2 - 2));
+  ctx2d.fillStyle = right > 0.85 ? '#f55' : (right > 0.6 ? '#fc0' : '#3fa');
+  ctx2d.fillRect(levelMeter.width / 2 + 1, 1, wR, levelMeter.height - 2);
+
+  // Divider
+  ctx2d.fillStyle = '#222';
+  ctx2d.fillRect(levelMeter.width / 2 - 1, 0, 2, levelMeter.height);
+}
+
+// Start meter animation
+function startLevelMeter() {
+  if (!analyser) {
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+  }
+  // Connect analyser after FX chain and gain
+  if (orderSelect.value === 'expander-exciter') {
+    exciter.connect(analyser);
+  } else {
+    expander.connect(analyser);
+  }
+  analyser.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  function animate() {
+    const data = new Uint8Array(analyser.fftSize);
+    analyser.getByteTimeDomainData(data);
+
+    // Stereo peak calculation (assumes interleaved L/R samples)
+    let peakL = 0, peakR = 0;
+    for (let i = 0; i < data.length; i += 2) {
+      const vL = (data[i] - 128) / 128;
+      const vR = (data[i + 1] - 128) / 128;
+      peakL = Math.max(peakL, Math.abs(vL));
+      peakR = Math.max(peakR, Math.abs(vR));
     }
+    drawLevelMeterStereo(peakL, peakR);
+    meterAnimId = requestAnimationFrame(animate);
   }
+  animate();
+}
 
-  const audio = document.getElementById('audio');
-  const playBtn = document.getElementById('playBtn');
-  const pauseBtn = document.getElementById('pauseBtn');
-  const stopBtn = document.getElementById('stopBtn');
-  const muteBtn = document.getElementById('muteBtn');
-  const urlInput = document.getElementById('streamUrl');
-  const songinfo = document.getElementById('songinfo');
-  const processingStatus = document.getElementById('processingStatus');
-  const themeToggle = document.getElementById('theme-toggle');
-  const orderSelect = document.getElementById('orderSelect');
-  const fxChainLabel = document.getElementById('fxChainLabel');
-  const progressBar = document.getElementById('progressBar');
-  const currentTimeLabel = document.getElementById('currentTime');
-  const durationLabel = document.getElementById('duration');
-  const levelMeter = document.getElementById('levelMeter');
+// Stop meter animation
+function stopLevelMeter() {
+  if (meterAnimId) cancelAnimationFrame(meterAnimId);
+  drawLevelMeterStereo(0, 0);
+}
 
-  let ctx, src, expander, exciter, gainNode, analyser;
+function setTheme(mode) {
+  document.body.classList.toggle('light', mode === 'light');
+  themeToggle.textContent = mode === 'light' ? '🌙' : '☀️';
+}
+themeToggle.onclick = function() {
+  const isLight = document.body.classList.toggle('light');
+  themeToggle.textContent = isLight ? '🌙' : '☀️';
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+};
+// Restore theme on load
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') setTheme('light');
+})();
 
-  let meterAnimId = null;
-
-  // Draw level meter (simple peak)
-  function drawLevelMeter(level) {
-    const ctx2d = levelMeter.getContext('2d');
-    ctx2d.clearRect(0, 0, levelMeter.width, levelMeter.height);
-    // Background bar
-    ctx2d.fillStyle = '#333';
-    ctx2d.fillRect(0, 0, levelMeter.width, levelMeter.height);
-    // Level bar
-    const w = Math.max(2, level * levelMeter.width);
-    ctx2d.fillStyle = level > 0.85 ? '#f55' : (level > 0.6 ? '#fc0' : '#3fa');
-    ctx2d.fillRect(0, 0, w, levelMeter.height);
-  }
-
-  // Replace your drawLevelMeter function with this stereo version
-  function drawLevelMeterStereo(left, right) {
-    const ctx2d = levelMeter.getContext('2d');
-    ctx2d.clearRect(0, 0, levelMeter.width, levelMeter.height);
-    // Background bar
-    ctx2d.fillStyle = '#333';
-    ctx2d.fillRect(0, 0, levelMeter.width, levelMeter.height);
-
-    // Left channel
-    const wL = Math.max(2, left * (levelMeter.width / 2 - 2));
-    ctx2d.fillStyle = left > 0.85 ? '#f55' : (left > 0.6 ? '#fc0' : '#3fa');
-    ctx2d.fillRect(1, 1, wL, levelMeter.height - 2);
-
-    // Right channel
-    const wR = Math.max(2, right * (levelMeter.width / 2 - 2));
-    ctx2d.fillStyle = right > 0.85 ? '#f55' : (right > 0.6 ? '#fc0' : '#3fa');
-    ctx2d.fillRect(levelMeter.width / 2 + 1, 1, wR, levelMeter.height - 2);
-
-    // Divider
-    ctx2d.fillStyle = '#222';
-    ctx2d.fillRect(levelMeter.width / 2 - 1, 0, 2, levelMeter.height);
-  }
-
-  // Start meter animation
-  function startLevelMeter() {
-    if (!analyser) {
-      analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-    }
-    // Connect analyser after FX chain and gain
-    if (orderSelect.value === 'expander-exciter') {
-      exciter.connect(analyser);
-    } else {
-      expander.connect(analyser);
-    }
-    analyser.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    function animate() {
-      const data = new Uint8Array(analyser.fftSize);
-      analyser.getByteTimeDomainData(data);
-
-      // Stereo peak calculation (assumes interleaved L/R samples)
-      let peakL = 0, peakR = 0;
-      for (let i = 0; i < data.length; i += 2) {
-        const vL = (data[i] - 128) / 128;
-        const vR = (data[i + 1] - 128) / 128;
-        peakL = Math.max(peakL, Math.abs(vL));
-        peakR = Math.max(peakR, Math.abs(vR));
-      }
-      drawLevelMeterStereo(peakL, peakR);
-      meterAnimId = requestAnimationFrame(animate);
-    }
-    animate();
-  }
-
-  // Stop meter animation
-  function stopLevelMeter() {
-    if (meterAnimId) cancelAnimationFrame(meterAnimId);
-    drawLevelMeterStereo(0, 0);
-  }
-
-  function setTheme(mode) {
-    document.body.classList.toggle('light', mode === 'light');
-    themeToggle.textContent = mode === 'light' ? '🌙' : '☀️';
-  }
-  themeToggle.onclick = function() {
-    const isLight = document.body.classList.toggle('light');
-    themeToggle.textContent = isLight ? '🌙' : '☀️';
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+// Remove getPresetParams and use automatic settings for expander and exciter
+function getFxParamsAuto() {
+  // "Auto mode": Use browser defaults for expander (DynamicsCompressor) and exciter
+  return {
+    exp: {}, // Let browser use default compressor settings
+    exc: { curve: 2 } // Mild exciter curve for all streams
   };
-  // Restore theme on load
-  (function() {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light') setTheme('light');
-  })();
+}
 
-  // Remove getPresetParams and use automatic settings for expander and exciter
-  function getFxParamsAuto() {
-    // "Auto mode": Use browser defaults for expander (DynamicsCompressor) and exciter
-    return {
-      exp: {}, // Let browser use default compressor settings
-      exc: { curve: 2 } // Mild exciter curve for all streams
-    };
+function updateFxChainLabel() {
+  fxChainLabel.textContent = orderSelect.value === 'expander-exciter'
+    ? "Expander → Exciter"
+    : "Exciter → Expander";
+}
+orderSelect.onchange = updateFxChainLabel;
+
+playBtn.onclick = () => {
+  const url = urlInput.value.trim();
+  if (!url) {
+    songinfo.textContent = 'Please enter a stream URL.';
+    return;
   }
-
-  function updateFxChainLabel() {
-    fxChainLabel.textContent = orderSelect.value === 'expander-exciter'
-      ? "Expander → Exciter"
-      : "Exciter → Expander";
-  }
-  orderSelect.onchange = updateFxChainLabel;
-
-  playBtn.onclick = () => {
-    const url = urlInput.value.trim();
-    if (!url) {
-      songinfo.textContent = 'Please enter a stream URL.';
-      return;
-    }
-    audio.src = url;
-    audio.play().catch(e => {
-      songinfo.textContent = 'Unable to play stream. Check the URL and CORS support.';
-    });
-
-    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (src) src.disconnect();
-    if (analyser) analyser.disconnect();
-
-    src = ctx.createMediaElementSource(audio);
-    const p = getFxParamsAuto();
-
-    // ==== Expander (DynamicsCompressor in auto mode) ====
-    expander = ctx.createDynamicsCompressor();
-    // Raise the output of the expander by increasing its threshold
-    expander.threshold.value = -30; // Was -50, now -30 for higher output level
-    expander.ratio.value = 1.5; // Gentler expansion
-
-    // ==== Exciter ====
-    exciter = ctx.createWaveShaper();
-    // Set exciter to low (less harmonic distortion)
-    function makeExciterCurve(amount = 1) { // amount lowered from 2 to 1
-      const n_samples = 44100;
-      const curve = new Float32Array(n_samples);
-      for (let i = 0; i < n_samples; ++i) {
-        let x = i * 2 / n_samples - 1;
-        curve[i] = Math.tanh(amount * x);
-      }
-      return curve;
-    }
-    exciter.curve = makeExciterCurve(1); // use low exciter amount
-    exciter.oversample = '4x';
-
-    // ==== Gain node for loudness normalization ====
-    if (gainNode) gainNode.disconnect();
-    gainNode = ctx.createGain();
-    // Set gain for approx 0 dB RMS (0 dBFS = gain 1.0)
-    gainNode.gain.value = 1.0;
-
-    // ---- Chain order switch ----
-    let nodeA, nodeB;
-    if (orderSelect.value === 'expander-exciter') {
-      nodeA = expander; nodeB = exciter;
-      processingStatus.style.color = "var(--processing)";
-    } else {
-      nodeA = exciter; nodeB = expander;
-      processingStatus.style.color = "#66aaff";
-    }
-    src.connect(nodeA);
-    nodeA.connect(nodeB);
-    nodeB.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    fetchSongInfo(url);
-    startLevelMeter();
-
-    // AutoEQ: Apply selected profile if available
-    const eqVal = document.getElementById('autoEqSelect').value;
-    if (autoEqProfiles[eqVal]) {
-      applyAutoEq(autoEqProfiles[eqVal]);
-      songinfo.textContent = "AutoEQ applied: " + document.getElementById('autoEqSelect').options[document.getElementById('autoEqSelect').selectedIndex].text;
-    }
-  };
-
-  stopBtn.onclick = () => {
-    audio.pause();
-    audio.src = '';
-    songinfo.textContent = 'No stream loaded.';
-    if (src) src.disconnect();
-    if (analyser) analyser.disconnect();
-    stopLevelMeter();
-  };
-
-  // Pause functionality
-  pauseBtn.onclick = () => {
-    audio.pause();
-  };
-
-  // Mute/unmute
-  muteBtn.onclick = () => {
-    audio.muted = !audio.muted;
-    muteBtn.textContent = audio.muted ? "Unmute" : "Mute";
-  };
-
-  // Progress bar update
-  audio.addEventListener('timeupdate', () => {
-    if (audio.duration && isFinite(audio.duration)) {
-      progressBar.max = audio.duration;
-      progressBar.value = audio.currentTime;
-      durationLabel.textContent = formatTime(audio.duration);
-    } else {
-      progressBar.value = 0;
-      durationLabel.textContent = "--:--";
-    }
-    currentTimeLabel.textContent = formatTime(audio.currentTime);
+  audio.src = url;
+  audio.play().catch(e => {
+    songinfo.textContent = 'Unable to play stream. Check the URL and CORS support.';
   });
 
-  // Seek (if supported)
-  progressBar.oninput = () => {
-    if (audio.duration && isFinite(audio.duration)) {
-      audio.currentTime = progressBar.value;
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (src) src.disconnect();
+  if (analyser) analyser.disconnect();
+
+  src = ctx.createMediaElementSource(audio);
+  const p = getFxParamsAuto();
+
+  // ==== Expander (DynamicsCompressor in auto mode) ====
+  expander = ctx.createDynamicsCompressor();
+  // Raise the output of the expander by increasing its threshold
+  expander.threshold.value = -30; // Was -50, now -30 for higher output level
+  expander.ratio.value = 1.5; // Gentler expansion
+
+  // ==== Exciter ====
+  exciter = ctx.createWaveShaper();
+  // Set exciter to low (less harmonic distortion)
+  function makeExciterCurve(amount = 1) { // amount lowered from 2 to 1
+    const n_samples = 44100;
+    const curve = new Float32Array(n_samples);
+    for (let i = 0; i < n_samples; ++i) {
+      let x = i * 2 / n_samples - 1;
+      curve[i] = Math.tanh(amount * x);
     }
-  };
-
-  // Format time helper
-  function formatTime(sec) {
-    if (!isFinite(sec)) return "00:00";
-    const m = Math.floor(sec / 60);
-    const s = Math.floor(sec % 60);
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return curve;
   }
+  exciter.curve = makeExciterCurve(1); // use low exciter amount
+  exciter.oversample = '4x';
 
-  // Reset controls on stop
-  stopBtn.onclick = () => {
-    audio.pause();
-    audio.src = '';
-    songinfo.textContent = 'No stream loaded.';
-    if (src) src.disconnect();
-  };
+  // ==== Gain node for loudness normalization ====
+  if (gainNode) gainNode.disconnect();
+  gainNode = ctx.createGain();
+  // Set gain for approx 0 dB RMS (0 dBFS = gain 1.0)
+  gainNode.gain.value = 1.0;
 
-  // ---- Song Info Fetching ----
-  // (remains the same)
-  function fetchSongInfo(url) {
-    songinfo.textContent = "Connecting to: " + url;
-    fetch(url, {
-      method: 'GET',
-      headers: { 'Icy-MetaData': '1' },
-      mode: 'cors'
-    })
-    .then(resp => {
-      if (!resp.ok) throw new Error('No ICY metadata available.');
-      songinfo.textContent = "Connected: " + url;
-    })
-    .catch(() => {
-      songinfo.textContent = "Playing: " + url + " (No song info available)";
-    });
+  // ---- Chain order switch ----
+  let nodeA, nodeB;
+  if (orderSelect.value === 'expander-exciter') {
+    nodeA = expander; nodeB = exciter;
+    processingStatus.style.color = "var(--processing)";
+  } else {
+    nodeA = exciter; nodeB = expander;
+    processingStatus.style.color = "#66aaff";
   }
+  src.connect(nodeA);
+  nodeA.connect(nodeB);
+  nodeB.connect(gainNode);
+  gainNode.connect(ctx.destination);
 
-  // Clock update function
-  function updateClocks() {
-    // Local time
-    const now = new Date();
-    const local = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-    // Swatch Internet Time (.beats)
-    // Biel Mean Time (BMT) = UTC+1
-    const utc = now.getUTCHours() * 3600 + now.getUTCMinutes() * 60 + now.getUTCSeconds();
-    const bmtSeconds = utc + 3600; // add 1 hour in seconds
-    let beats = Math.floor((bmtSeconds / 86.4) % 1000);
-    if (beats < 0) beats += 1000;
-    document.getElementById('clock').textContent =
-      `Local: ${local} | Internet Time: @${beats.toString().padStart(3, '0')}`;
+  fetchSongInfo(url);
+  startLevelMeter();
+
+  // AutoEQ: Apply selected profile if available
+  const eqVal = document.getElementById('autoEqSelect').value;
+  if (autoEqProfiles[eqVal]) {
+    applyAutoEq(autoEqProfiles[eqVal]);
+    songinfo.textContent = "AutoEQ applied: " + document.getElementById('autoEqSelect').options[document.getElementById('autoEqSelect').selectedIndex].text;
   }
-  setInterval(updateClocks, 1000);
-  updateClocks();
+};
 
-  // Initial UI state
-  updateFxChainLabel();
+stopBtn.onclick = () => {
+  audio.pause();
+  audio.src = '';
+  songinfo.textContent = 'No stream loaded.';
+  if (src) src.disconnect();
+  if (analyser) analyser.disconnect();
+  stopLevelMeter();
+};
 
-  // Auto-populate stream URL from ?stream=... parameter
-  (function() {
-    const params = new URLSearchParams(window.location.search);
-    const stream = params.get('stream');
-    if (stream) {
-      urlInput.value = stream;
-      // Optional: auto-play if stream param is present
-      // playBtn.click();
-    }
-  })();
+// Pause functionality
+pauseBtn.onclick = () => {
+  audio.pause();
+};
 
-  // Example AutoEQ profiles (gain values in dB for 10 bands: 32, 64, 125, 250, 500, 1k, 2k, 4k, 8k, 16k)
-  const autoEqProfiles = {
-    hd650:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
-    dt990:    [1, 0, -2, -3, 0, 2, 4, 3, 1, 0],
-    m50x:     [0, 1, 0, -1, 1, 2, 2, 1, 0, -1],
-    qc35:     [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
-    xm4:      [0, 0, -1, -2, 0, 2, 3, 2, 1, 0],
-    hd600:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
-    he400i:   [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
-    k701:     [0, 0, -2, -3, 0, 2, 4, 3, 1, 0],
-    sr80e:    [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
-    dt770:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
-    airpodspro: [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],
-    galaxybuds: [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
-    wf1000xm4:  [0, 0, -1, -2, 0, 2, 3, 2, 1, 0],
-    freebuds:   [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
-    pixelbuds:  [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
-    soundcore:  [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
-    jabra75t:   [0, 0, -2, -3, 0, 2, 4, 3, 1, 0],
-    oneplusbuds:[1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
-    beatsfit:   [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
-    sennmomentum:[1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
-    mdr7506:   [0, 0, -2, -2, 0, 2, 3, 2, 1, 0],      // Sony MDR-7506
-    airpods2:  [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],       // Apple AirPods 2
-    airpods3:  [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],       // Apple AirPods 3
-  };
+// Mute/unmute
+muteBtn.onclick = () => {
+  audio.muted = !audio.muted;
+  muteBtn.textContent = audio.muted ? "Unmute" : "Mute";
+};
 
-  let eqNodes = [];
+// Progress bar update
+audio.addEventListener('timeupdate', () => {
+  if (audio.duration && isFinite(audio.duration)) {
+    progressBar.max = audio.duration;
+    progressBar.value = audio.currentTime;
+    durationLabel.textContent = formatTime(audio.duration);
+  } else {
+    progressBar.value = 0;
+    durationLabel.textContent = "--:--";
+  }
+  currentTimeLabel.textContent = formatTime(audio.currentTime);
+});
 
-  function applyAutoEq(profile) {
-    // Disconnect previous EQ nodes
+// Seek (if supported)
+progressBar.oninput = () => {
+  if (audio.duration && isFinite(audio.duration)) {
+    audio.currentTime = progressBar.value;
+  }
+};
+
+// Format time helper
+function formatTime(sec) {
+  if (!isFinite(sec)) return "00:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+// Reset controls on stop
+stopBtn.onclick = () => {
+  audio.pause();
+  audio.src = '';
+  songinfo.textContent = 'No stream loaded.';
+  if (src) src.disconnect();
+};
+
+// ---- Song Info Fetching ----
+// (remains the same)
+function fetchSongInfo(url) {
+  songinfo.textContent = "Connecting to: " + url;
+  fetch(url, {
+    method: 'GET',
+    headers: { 'Icy-MetaData': '1' },
+    mode: 'cors'
+  })
+  .then(resp => {
+    if (!resp.ok) throw new Error('No ICY metadata available.');
+    songinfo.textContent = "Connected: " + url;
+  })
+  .catch(() => {
+    songinfo.textContent = "Playing: " + url + " (No song info available)";
+  });
+}
+
+// Clock update function
+function updateClocks() {
+  // Local time
+  const now = new Date();
+  const local = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+  // Swatch Internet Time (.beats)
+  // Biel Mean Time (BMT) = UTC+1
+  const utc = now.getUTCHours() * 3600 + now.getUTCMinutes() * 60 + now.getUTCSeconds();
+  const bmtSeconds = utc + 3600; // add 1 hour in seconds
+  let beats = Math.floor((bmtSeconds / 86.4) % 1000);
+  if (beats < 0) beats += 1000;
+  document.getElementById('clock').textContent =
+    `Local: ${local} | Internet Time: @${beats.toString().padStart(3, '0')}`;
+}
+setInterval(updateClocks, 1000);
+updateClocks();
+
+// Initial UI state
+updateFxChainLabel();
+
+// Auto-populate stream URL from ?stream=... parameter
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const stream = params.get('stream');
+  if (stream) {
+    urlInput.value = stream;
+    // Optional: auto-play if stream param is present
+    // playBtn.click();
+  }
+})();
+
+// Example AutoEQ profiles (gain values in dB for 10 bands: 32, 64, 125, 250, 500, 1k, 2k, 4k, 8k, 16k)
+const autoEqProfiles = {
+  hd650:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  dt990:    [1, 0, -2, -3, 0, 2, 4, 3, 1, 0],
+  m50x:     [0, 1, 0, -1, 1, 2, 2, 1, 0, -1],
+  qc35:     [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  xm4:      [0, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  hd600:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  he400i:   [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  k701:     [0, 0, -2, -3, 0, 2, 4, 3, 1, 0],
+  sr80e:    [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  dt770:    [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  airpodspro: [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  galaxybuds: [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  wf1000xm4:  [0, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  freebuds:   [1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  pixelbuds:  [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  soundcore:  [1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  jabra75t:   [0, 0, -2, -3, 0, 2, 4, 3, 1, 0],
+  oneplusbuds:[1, 1, 0, -1, 0, 1, 2, 2, 1, 0],
+  beatsfit:   [0, 0, -1, -2, 0, 2, 3, 2, 0, -1],
+  sennmomentum:[1, 0, -1, -2, 0, 2, 3, 2, 1, 0],
+  mdr7506:   [0, 0, -2, -2, 0, 2, 3, 2, 1, 0],      // Sony MDR-7506
+  airpods2:  [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],       // Apple AirPods 2
+  airpods3:  [2, 1, 0, -1, 0, 1, 2, 2, 1, 0],       // Apple AirPods 3
+};
+
+let eqNodes = [];
+
+function applyAutoEq(profile) {
+  // Disconnect previous EQ nodes
+  if (eqNodes.length && gainNode) {
+    eqNodes.forEach(node => node.disconnect());
+    eqNodes = [];
+  }
+  if (!profile || !gainNode) return;
+
+  // Create 10 band EQ (BiquadFilterNode)
+  let lastNode = gainNode;
+  profile.forEach((gain, i) => {
+    const freqs = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+    const eq = ctx.createBiquadFilter();
+    eq.type = "peaking";
+    eq.frequency.value = freqs[i];
+    eq.Q.value = 1.2;
+    eq.gain.value = gain;
+    lastNode.disconnect();
+    lastNode.connect(eq);
+    lastNode = eq;
+    eqNodes.push(eq);
+  });
+  // Connect last EQ node to destination
+  lastNode.connect(ctx.destination);
+}
+
+// Listen for dropdown changes
+document.getElementById('autoEqSelect').onchange = function() {
+  const val = this.value;
+  if (autoEqProfiles[val]) {
+    applyAutoEq(autoEqProfiles[val]);
+    songinfo.textContent = "AutoEQ applied: " + this.options[this.selectedIndex].text;
+  } else {
+    // Remove EQ
     if (eqNodes.length && gainNode) {
       eqNodes.forEach(node => node.disconnect());
+      gainNode.connect(ctx.destination);
       eqNodes = [];
+      songinfo.textContent = "AutoEQ disabled.";
     }
-    if (!profile || !gainNode) return;
-
-    // Create 10 band EQ (BiquadFilterNode)
-    let lastNode = gainNode;
-    profile.forEach((gain, i) => {
-      const freqs = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-      const eq = ctx.createBiquadFilter();
-      eq.type = "peaking";
-      eq.frequency.value = freqs[i];
-      eq.Q.value = 1.2;
-      eq.gain.value = gain;
-      lastNode.disconnect();
-      lastNode.connect(eq);
-      lastNode = eq;
-      eqNodes.push(eq);
-    });
-    // Connect last EQ node to destination
-    lastNode.connect(ctx.destination);
   }
+};
 
-  // Listen for dropdown changes
-  document.getElementById('autoEqSelect').onchange = function() {
-    const val = this.value;
-    if (autoEqProfiles[val]) {
-      applyAutoEq(autoEqProfiles[val]);
-      songinfo.textContent = "AutoEQ applied: " + this.options[this.selectedIndex].text;
-    } else {
-      // Remove EQ
-      if (eqNodes.length && gainNode) {
-        eqNodes.forEach(node => node.disconnect());
-        gainNode.connect(ctx.destination);
-        eqNodes = [];
-        songinfo.textContent = "AutoEQ disabled.";
-      }
+// Re-apply EQ after playback starts
+playBtn.onclick = () => {
+  const url = urlInput.value.trim();
+  if (!url) {
+    songinfo.textContent = 'Please enter a stream URL.';
+    return;
+  }
+  audio.src = url;
+  audio.play().catch(e => {
+    songinfo.textContent = 'Unable to play stream. Check the URL and CORS support.';
+  });
+
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (src) src.disconnect();
+  if (analyser) analyser.disconnect();
+
+  src = ctx.createMediaElementSource(audio);
+  const p = getFxParamsAuto();
+
+  // ==== Expander (DynamicsCompressor in auto mode) ====
+  expander = ctx.createDynamicsCompressor();
+  // Raise the output of the expander by increasing its threshold
+  expander.threshold.value = -30; // Was -50, now -30 for higher output level
+  expander.ratio.value = 1.5; // Gentler expansion
+
+  // ==== Exciter ====
+  exciter = ctx.createWaveShaper();
+  // Set exciter to low (less harmonic distortion)
+  function makeExciterCurve(amount = 1) { // amount lowered from 2 to 1
+    const n_samples = 44100;
+    const curve = new Float32Array(n_samples);
+    for (let i = 0; i < n_samples; ++i) {
+      let x = i * 2 / n_samples - 1;
+      curve[i] = Math.tanh(amount * x);
     }
-  };
+    return curve;
+  }
+  exciter.curve = makeExciterCurve(1); // use low exciter amount
+  exciter.oversample = '4x';
 
-  // Re-apply EQ after playback starts
-  playBtn.onclick = () => {
-    const url = urlInput.value.trim();
-    if (!url) {
-      songinfo.textContent = 'Please enter a stream URL.';
-      return;
-    }
-    audio.src = url;
-    audio.play().catch(e => {
-      songinfo.textContent = 'Unable to play stream. Check the URL and CORS support.';
-    });
+  // ==== Gain node for loudness normalization ====
+  if (gainNode) gainNode.disconnect();
+  gainNode = ctx.createGain();
+  // Set gain for approx 0 dB RMS (0 dBFS = gain 1.0)
+  gainNode.gain.value = 1.0;
 
-    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (src) src.disconnect();
-    if (analyser) analyser.disconnect();
+  // ---- Chain order switch ----
+  let nodeA, nodeB;
+  if (orderSelect.value === 'expander-exciter') {
+    nodeA = expander; nodeB = exciter;
+    processingStatus.style.color = "var(--processing)";
+  } else {
+    nodeA = exciter; nodeB = expander;
+    processingStatus.style.color = "#66aaff";
+  }
+  src.connect(nodeA);
+  nodeA.connect(nodeB);
+  nodeB.connect(gainNode);
+  gainNode.connect(ctx.destination);
 
-    src = ctx.createMediaElementSource(audio);
-    const p = getFxParamsAuto();
+  fetchSongInfo(url);
+  startLevelMeter();
 
-    // ==== Expander (DynamicsCompressor in auto mode) ====
-    expander = ctx.createDynamicsCompressor();
-    // Raise the output of the expander by increasing its threshold
-    expander.threshold.value = -30; // Was -50, now -30 for higher output level
-    expander.ratio.value = 1.5; // Gentler expansion
-
-    // ==== Exciter ====
-    exciter = ctx.createWaveShaper();
-    // Set exciter to low (less harmonic distortion)
-    function makeExciterCurve(amount = 1) { // amount lowered from 2 to 1
-      const n_samples = 44100;
-      const curve = new Float32Array(n_samples);
-      for (let i = 0; i < n_samples; ++i) {
-        let x = i * 2 / n_samples - 1;
-        curve[i] = Math.tanh(amount * x);
-      }
-      return curve;
-    }
-    exciter.curve = makeExciterCurve(1); // use low exciter amount
-    exciter.oversample = '4x';
-
-    // ==== Gain node for loudness normalization ====
-    if (gainNode) gainNode.disconnect();
-    gainNode = ctx.createGain();
-    // Set gain for approx 0 dB RMS (0 dBFS = gain 1.0)
-    gainNode.gain.value = 1.0;
-
-    // ---- Chain order switch ----
-    let nodeA, nodeB;
-    if (orderSelect.value === 'expander-exciter') {
-      nodeA = expander; nodeB = exciter;
-      processingStatus.style.color = "var(--processing)";
-    } else {
-      nodeA = exciter; nodeB = expander;
-      processingStatus.style.color = "#66aaff";
-    }
-    src.connect(nodeA);
-    nodeA.connect(nodeB);
-    nodeB.connect(gainNode);
-    gainNode.connect(ctx.destination);
-
-    fetchSongInfo(url);
-    startLevelMeter();
-
-    // AutoEQ: Apply selected profile if available
-    const eqVal = document.getElementById('autoEqSelect').value;
-    if (autoEqProfiles[eqVal]) {
-      applyAutoEq(autoEqProfiles[eqVal]);
-      songinfo.textContent = "AutoEQ applied: " + document.getElementById('autoEqSelect').options[document.getElementById('autoEqSelect').selectedIndex].text;
-    }
-  };
-});
+  // AutoEQ: Apply selected profile if available
+  const eqVal = document.getElementById('autoEqSelect').value;
+  if (autoEqProfiles[eqVal]) {
+    applyAutoEq(autoEqProfiles[eqVal]);
+    songinfo.textContent = "AutoEQ applied: " + document.getElementById('autoEqSelect').options[document.getElementById('autoEqSelect').selectedIndex].text;
+  }
+};
 </script>
 </body>
 </html>
